@@ -1,14 +1,69 @@
 #include "ab_circular_buffer.h"
 
-CircularBuffer::CircularBuffer(const int bufferSize) {}
-CircularBuffer::CircularBuffer(const CircularBuffer& other) {}
-CircularBuffer& CircularBuffer::operator = (const CircularBuffer& other) {}
-CircularBuffer::~CircularBuffer() {}
+CircularBuffer::CircularBuffer(const int bufferSize)
+{
+    this->bufferSize = bufferSize;
+    buffer = new int[bufferSize];
+    for(int i = 0; i < bufferSize; i++)
+        buffer[i] = 0;
+}
 
-void CircularBuffer::update(const int val) {}
-int CircularBuffer::getLatest() const {}
-int CircularBuffer::getPrev(const int index) const {}	//Seems to work as getNext too, by being given negative indices.
-//Yes, I am leaving this comment here. This is from my own code. I implemented this a long time ago.
+CircularBuffer::CircularBuffer(const CircularBuffer& other)
+{
+    bufferSize = other.bufferSize;
+    buffer = new int[bufferSize];
+    for(int i = 0; i < bufferSize; i++)
+        buffer[i] = other.buffer[i];
+}
 
-void CircularBuffer::printBuffer() const {}
-void CircularBuffer::printBufferProperly() const {}
+CircularBuffer& CircularBuffer::operator = (const CircularBuffer& other)
+{
+    if(this != &other)
+    {
+        delete[] buffer;
+        bufferSize = other.bufferSize;
+        buffer = new int[bufferSize];
+        for(int i = 0; i < bufferSize; i++)
+            buffer[i] = other.buffer[i];
+    }
+    return *this;
+}
+
+CircularBuffer::~CircularBuffer()
+{
+    delete[] buffer;
+    buffer = NULL;
+}
+
+void CircularBuffer::update(const int val)
+{
+    for(int i = bufferSize - 1; i > 0; i--)
+        buffer[i] = buffer[i - 1];
+    buffer[0] = val;
+}
+
+int CircularBuffer::getLatest() const
+{
+    return buffer[0];
+}
+
+int CircularBuffer::getPrev(const int index) const
+{
+    int pos = index % bufferSize;
+    if(pos < 0) pos += bufferSize;
+    return buffer[pos];
+}
+
+void CircularBuffer::printBuffer() const
+{
+    for(int i = 0; i < bufferSize; i++)
+        std::cout << buffer[i] << " ";
+    std::cout << std::endl;
+}
+
+void CircularBuffer::printBufferProperly() const
+{
+    for(int i = 0; i < bufferSize; i++)
+        std::cout << buffer[i] << " ";
+    std::cout << std::endl;
+}
